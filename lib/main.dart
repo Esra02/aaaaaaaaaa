@@ -1,4 +1,3 @@
-import 'package:dal/pages/Auth_signin.dart';
 import 'package:dal/pages/SignUp.dart';
 import 'package:dal/pages/Signin.dart';
 import 'package:dal/pages/Welcome.dart';

@@ -1,11 +1,43 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class ForgotPassword extends StatelessWidget {
+class ForgotPassword extends StatefulWidget {
+  const ForgotPassword({Key? key}) : super(key: key);
+
+  @override
+  _ForgotPasswordState createState() => _ForgotPasswordState();
+}
+
+class _ForgotPasswordState extends State<ForgotPassword> {
+  final _emailController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  Future forgotPassword() async {
+    try{
+      await FirebaseAuth.instance.sendPasswordResetEmail(
+        email: _emailController.text.trim());
+    } on FirebaseAuthException catch(e){
+      print(e);
+      showDialog(
+        context: context,
+        builder: (context){
+          return AlertDialog(
+            content: Text(e.message.toString()),
+          );
+        });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "Forgot Password",
           style: TextStyle(
             fontSize: 20,
@@ -25,7 +57,7 @@ class ForgotPassword extends StatelessWidget {
             right: 0,
             child: Container(
               height: MediaQuery.of(context).size.height * 0.8,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Color.fromRGBO(252, 206, 138, 1),
                 borderRadius: BorderRadius.vertical(
                   top: Radius.circular(40),
@@ -37,7 +69,7 @@ class ForgotPassword extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
+                    const Text(
                       "Forgot Password",
                       style: TextStyle(
                         fontSize: 24,
@@ -47,23 +79,20 @@ class ForgotPassword extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
                     SizedBox(height: 20),
-                    TextField(
+                     TextField(
+                      controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
-                        labelText: "Email or Phone Number",
+                        labelText: "Enter your Email ",
                       ),
                     ),
                     SizedBox(height: 20),
                     ElevatedButton(
-                      onPressed: () {
-                        // Handle the password reset logic here
-                        // You can use the entered email/phone to send a reset link or code
-                        // Add your logic to handle the password reset
-                      },
+                      onPressed: forgotPassword, 
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFF742A64),
                       ),
-                      child: Text(
+                      child: const Text(
                         "Send",
                         style: TextStyle(
                           color: Colors.white,
@@ -76,7 +105,7 @@ class ForgotPassword extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
+     ),
+);
+}
 }

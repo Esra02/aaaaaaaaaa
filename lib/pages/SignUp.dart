@@ -1,5 +1,6 @@
 import 'package:dal/pages/HomeScreen.dart';
 import 'package:dal/pages/Signin.dart';
+import 'package:dal/pages/prefpage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -10,18 +11,35 @@ class SignUp extends StatefulWidget {
   _Signupstate createState() => _Signupstate();
 }
 
-// Define the state for the Signin page
+// Define the state for the Signup page
 class _Signupstate extends State<SignUp> {
   // Controllers for email and password text fields
+  final _userNameTextController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmedpasswordController = TextEditingController();
 
-  Future signIn() async {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
+  Future signup() async {
+    if (passwordCondirmed()) {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
       email: _emailController.text.trim(),
       password: _passwordController.text.trim(),
-    );
+    ).then((value) {
+      Navigator.push(context,
+         MaterialPageRoute(builder: (context) => PreferenceSelectionPage()));
+    }).onError((error, stackTrace){
+      print("Error ${error.toString()}");
+    });
+    }
+  }
+
+  bool passwordCondirmed(){
+    if (_passwordController.text.trim() == 
+    _confirmedpasswordController.text.trim()) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @override
@@ -29,6 +47,7 @@ class _Signupstate extends State<SignUp> {
     super.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmedpasswordController.dispose();
   }
 
   @override
@@ -80,6 +99,7 @@ class _Signupstate extends State<SignUp> {
                 width: 266,
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: TextField(
+                  controller: _userNameTextController,
                   decoration: InputDecoration(
                     icon: Icon(
                       Icons.person,
@@ -104,6 +124,7 @@ class _Signupstate extends State<SignUp> {
                 width: 266,
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: TextField(
+                  controller: _emailController,
                   decoration: InputDecoration(
                     icon: Icon(
                       Icons.email,
@@ -127,6 +148,7 @@ class _Signupstate extends State<SignUp> {
                 width: 266,
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: TextField(
+                  controller: _passwordController,
                   obscureText: true,
                   decoration: InputDecoration(
                     suffix: Icon(
@@ -156,6 +178,7 @@ class _Signupstate extends State<SignUp> {
                 width: 266,
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: TextField(
+                  controller: _confirmedpasswordController,
                   obscureText: true,
                   decoration: InputDecoration(
                     suffix: Icon(
@@ -214,29 +237,26 @@ class _Signupstate extends State<SignUp> {
               ),
 
               // Submit Button
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => HomeScreen()),
-                      );
-                },
-                style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(Color(0xFF742A64)),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-                  child: Text(
-                    'SignUp',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
+              Padding(
+                padding: const EdgeInsets.symmetric(),
+                child: GestureDetector(
+                  onTap: signup, // Call signIn method when tapped
+                  child: SingleChildScrollView(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Color(0xFF742A64), // Set background color
+                        borderRadius:
+                            BorderRadius.circular(27), // Set border radius
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 106, vertical: 10), // Set padding
+                      child: const Text(
+                        "Sign up",
+                        style: TextStyle(
+                          fontSize: 24,
+                          color: Color.fromRGBO(255, 255, 255, 1),
+                        ),
+                      ),
                     ),
                   ),
                 ),

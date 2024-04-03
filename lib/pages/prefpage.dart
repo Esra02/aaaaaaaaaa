@@ -1,5 +1,5 @@
-import 'package:dal/pages/editprofilepage.dart';
-import 'package:dal/pages/userprofilepage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -25,6 +25,8 @@ class PreferenceSelectionPage extends StatefulWidget {
 }
 
 class _PreferenceSelectionPageState extends State<PreferenceSelectionPage> {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   List<Map<String, dynamic>> preferences = [
     {'name': 'Travel', 'image': 'assets/travel.jpg'},
     {'name': 'Food', 'image': 'assets/food.jpg'},
@@ -52,6 +54,21 @@ class _PreferenceSelectionPageState extends State<PreferenceSelectionPage> {
     });
   }
 
+
+  Future<void> _savePreferences() async {
+    try {
+      // Get the user's UID (replace with your actual user authentication implementation)
+      String uid = 'eOABH2sYLTeFsgQYlnsvJlUtezx2'; // Replace with actual user UID
+      // Reference to the user's preferences document
+      DocumentReference userPrefsRef = _firestore.collection('user_preferences').doc(uid);
+
+      // Save the selected preferences to Firestore
+      await userPrefsRef.set({'preferences': selectedPreferences});
+    } catch (error) {
+      print('Error saving user preferences: $error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,10 +77,7 @@ class _PreferenceSelectionPageState extends State<PreferenceSelectionPage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => UserProfilePage()),
-            );
+            Navigator.pop(context);
           },
         ),
       ),
@@ -119,10 +133,7 @@ class _PreferenceSelectionPageState extends State<PreferenceSelectionPage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // You can handle the selected preferences here, e.g., save to database, navigate to next screen, etc.
-          print('Selected Preferences: $selectedPreferences');
-        },
+        onPressed: _savePreferences,
         child: Icon(Icons.check),
       ),
     );
